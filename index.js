@@ -136,6 +136,7 @@ const getRemainder = (polynomial) => {
 				currentDigit.length < generating.length
 			) {
 				currentDigit += polynomial[indexEnd++];
+				currentDigit = String(+currentDigit);
 			}
 
 			if (currentDigit.length < generating.length) {
