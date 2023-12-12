@@ -1,0 +1,27 @@
+.message-1 {
+	background-color: rgb(57, 201, 57);
+}
+
+.message-2 {
+	background-color: rgb(57, 201, 57);
+}
+
+.message-3 {
+	background-color: yellow;
+}
+
+.message-4 {
+	background-color: rgb(214, 62, 62);
+}
+
+.errors_count {
+	font-size: 1.2em;
+}
+
+.comparison {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 50% 50%;
+}
+
+
