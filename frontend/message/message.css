@@ -14,7 +14,7 @@
 	background-color: rgb(214, 62, 62);
 }
 
-.errors_count {
+.errors_count, .conclusion {
 	font-size: 1.2em;
 }
 
@@ -24,4 +24,21 @@
 	grid-template-columns: 50% 50%;
 }
 
+.message_header {
+	width: 100%;
+	display: grid;
+	grid-template-columns: 50% 50%;
+}
+
+.message_box {
+	padding: 10px;
+	border-radius: 8px;
+}
+
+hr {
+	border: none; /* Убираем границу */
+	height: 1px; /* Устанавливаем высоту */
+	background-color: black; /* Устанавливаем цвет */
+}
+   
 

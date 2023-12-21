@@ -25,47 +25,35 @@ app.get("/", (req, res) => {
 // описание long polling запроса
 app.get("/long-polling-request", (req, res) => {
 	// выбирается случайное время ожидания из отрезка [1000, 10 000]
-	const timeout = Math.round(
-		(MAX_TIMEOUT - MIN_TIMEOUT) * Math.random() + MIN_TIMEOUT
-	);
+	const timeout = Math.round(Math.random() * (MAX_TIMEOUT - MIN_TIMEOUT) + MIN_TIMEOUT);
 
 	// выбирается случайное число из отрезка [1, 15], представляется в двоичном виде
-	const value = Math.round((MAX_VALUE - MIN_VALUE) * Math.random() + MIN_VALUE);
+	const value = Math.round(Math.random() * (MAX_VALUE - MIN_VALUE) + MIN_VALUE);
 	let original = value.toString(2);
+	original = original.padStart(POLY_LEN, "0");
 
-	for (; original.length < POLY_LEN; ) {
-		original = "0" + original;
-	}
+	let encoded = original.padEnd(ENCODED_POLY_LEN, "0");
 
-	let encoded = original;
-
-	for (; encoded.length < ENCODED_POLY_LEN; ) {
-		encoded += "0";
-	}
-
+	// получаем остаток от деления на образующий полином
 	let remainder = getRemainder(encoded);
+	remainder = remainder.padStart(ENCODED_POLY_LEN - POLY_LEN, "0");
 
-	for (; remainder.length < ENCODED_POLY_LEN - POLY_LEN; ) {
-		remainder = "0" + remainder;
-	}
-
+	// получаем итоговый закодированный полином
 	encoded = (parseInt(encoded, 2) + parseInt(remainder, 2)).toString(2);
+	encoded = encoded.padStart(ENCODED_POLY_LEN, "0");
 
-	for (; encoded.length < ENCODED_POLY_LEN; ) {
-		encoded = "0" + encoded;
-	}
-
-	let corrupted = encoded;
-
-	// рандомим количество ошибок (от 0 до 2)
+	// берём рандомное количество ошибок (от 0 до 2)
 	let errorCount = Math.round(Math.random() * 2);
 
-	// для одной ошибки
+	// без ошибок (0)
+	let corrupted = encoded;
+
+	// 1 ошибка
 	if (errorCount === 1) {
 		corrupted = makeOneErr(corrupted);
 	}
 
-	// для двух ошибок
+	// 2 ошибки
 	if (errorCount === 2) {
 		corrupted = makeTwoErr(corrupted);
 	}
@@ -85,38 +73,27 @@ app.listen(PORT, () => {
 	console.log(`Server started at http://localhost:${PORT}`);
 });
 
-const makeOneErr = (corrupted) => {
-	// рандомим позицию ошибки
+const makeOneErr = (encoded_pol) => {
+	// берём рандомную позицию в полиноме для ошибки
 	let errIndex = Math.round(Math.random() * (ENCODED_POLY_LEN - 1));
 
-	// строки в js неизменяемы, нужно перегонять в массив
-	const encodedArr = corrupted.split("");
-
-	// меняем бит на противоположный
-	encodedArr[errIndex] = encodedArr[errIndex] === "0" ? "1" : "0";
-
-	// собираем обратно в строку
-	corrupted = encodedArr.join("");
-
-	return corrupted;
+	return encoded_pol.substring(0, errIndex) + String(encoded_pol[errIndex] ^ 1) + encoded_pol.substring(errIndex + 1);
 };
 
-const makeTwoErr = (corrupted) => {
+const makeTwoErr = (encoded_pol) => {
 	let errIndex_1 = Math.round(Math.random() * (ENCODED_POLY_LEN - 1));
 	let errIndex_2 = Math.round(Math.random() * (ENCODED_POLY_LEN - 1));
 	// в цикле проверяем, чтобы позиции ошибок были разные
-	for (; errIndex_2 === errIndex_1; ) {
+	while (errIndex_1 === errIndex_2) {
 		errIndex_2 = Math.round(Math.random() * (ENCODED_POLY_LEN - 1));
 	}
 
-	const encodedArr = corrupted.split("");
+	const firstIndex = Math.min(errIndex_1, errIndex_2);
+	const secondIndex = Math.max(errIndex_1, errIndex_2);
 
-	encodedArr[errIndex_1] = encodedArr[errIndex_1] === "0" ? "1" : "0";
-	encodedArr[errIndex_2] = encodedArr[errIndex_2] === "0" ? "1" : "0";
-
-	corrupted = encodedArr.join("");
-
-	return corrupted;
+	return encoded_pol.substring(0, firstIndex) + String(encoded_pol[firstIndex] ^ 1) + encoded_pol.substring(firstIndex + 1, secondIndex) 
+		+ String(encoded_pol[secondIndex] ^ 1) + encoded_pol.substring(secondIndex + 1);
+	
 };
 
 const getRemainder = (polynomial) => {
