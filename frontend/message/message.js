@@ -21,7 +21,7 @@ export const message = (original, encoded, corrupted, decoded, errorCount, statu
 
     <div>
       <div class="decoded">Раскодированное сообщение:&nbsp; ${decoded}</div>
-      <div class="original">Оригинальное сообщение:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${original}</div>
+      <div class="original">Оригинальное сообщение:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${original}</div>
     </div>
   </div>
 </div>
