@@ -65,7 +65,7 @@ app.get("/long-polling-request", (req, res) => {
 			corrupted_polynomial: corrupted,
 			error_count: errorCount,
 		});
-	}, 1000);
+	}, timeout);
 });
 
 // запуск сервера приложения
